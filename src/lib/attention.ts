@@ -1,5 +1,5 @@
 import { STALE_AFTER_DAYS } from "./config";
-import { dayKey, daysSince, diffDays, formatDayKey, todayKey } from "./dates";
+import { dayKey, daysSince, diffDays, formatDayInSentence, formatDayKey, todayKey } from "./dates";
 import type { Job } from "./types";
 
 /**
@@ -28,7 +28,7 @@ export function jobState(job: Job, today = todayKey(), now = new Date()): JobSta
 
   const threshold = STALE_AFTER_DAYS[job.status];
   const isStale = threshold !== null && daysSinceUpdate >= threshold;
-  const dueText = (key: string) => `Due ${formatDayKey(key, today).replace(/^(Today|Tomorrow)$/, (w) => w.toLowerCase())}`;
+  const dueText = (key: string) => `Due ${formatDayInSentence(key, today)}`;
 
   // Booked visits are driven by the visit date, not a follow-up date.
   if (job.status === "scheduled") {
@@ -43,7 +43,7 @@ export function jobState(job: Job, today = todayKey(), now = new Date()): JobSta
         bucket: "overdue",
         overdueDays: -delta,
         isStale: true,
-        dueLabel: `Visit was ${formatDayKey(visitDay, today).replace("Yesterday", "yesterday")}`,
+        dueLabel: `Visit was ${formatDayInSentence(visitDay, today)}`,
       };
     }
     if (delta === 0) return { ...base, bucket: "scheduled_today", dueLabel: "Today" };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, dayKey, diffDays, formatDayKey, isoToZonedLocal, zonedLocalToIso } from "./dates";
+import { addDays, dayKey, diffDays, formatDayInSentence, formatDayKey, isoToZonedLocal, zonedLocalToIso } from "./dates";
 
 // Business timezone is America/Chicago (see vitest.config.ts).
 
@@ -47,5 +47,13 @@ describe("day keys", () => {
     expect(formatDayKey("2026-10-08", today)).toBe("Thursday");
     expect(formatDayKey("2026-10-04", today)).toBe("Sunday");
     expect(formatDayKey("2026-10-20", today)).toBe("Oct 20");
+  });
+
+  it("lowercases only relative words when used mid-sentence", () => {
+    const today = "2026-10-06";
+    expect(formatDayInSentence("2026-10-06", today)).toBe("today");
+    expect(formatDayInSentence("2026-10-05", today)).toBe("yesterday");
+    expect(formatDayInSentence("2026-10-04", today)).toBe("Sunday");
+    expect(formatDayInSentence("2026-10-20", today)).toBe("Oct 20");
   });
 });

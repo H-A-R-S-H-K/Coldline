@@ -92,6 +92,11 @@ export function formatDayKey(key: string, today = todayKey()): string {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
 }
 
+/** formatDayKey for use mid-sentence: "due today", "due Sunday", "due Oct 20". */
+export function formatDayInSentence(key: string, today = todayKey()): string {
+  return formatDayKey(key, today).replace(/^(Today|Tomorrow|Yesterday)$/, (w) => w.toLowerCase());
+}
+
 export function formatDateTime(iso: string): string {
   return `${formatDayKey(dayKey(iso))}, ${formatTime(iso)}`;
 }

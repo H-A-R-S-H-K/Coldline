@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { BUSINESS_TZ } from "@/lib/config";
-import { addDays, dayKey, formatDateTime, formatDayKey, todayKey, zonedLocalToIso } from "@/lib/dates";
+import { addDays, dayKey, formatDateTime, formatDayInSentence, formatDayKey, todayKey, zonedLocalToIso } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult, JobSource, JobStatus, Priority } from "@/lib/types";
 import { JOB_SOURCES, JOB_STATUSES } from "@/lib/types";
@@ -302,7 +302,7 @@ export async function recordOutcome(input: OutcomeInput): Promise<ActionResult> 
       note,
       status === "scheduled" && patch.scheduled_at ? `Visit ${formatDateTime(String(patch.scheduled_at))}` : null,
       value !== null ? `Quote ${money(value)}` : null,
-      outcome.key === "snoozed" && patch.next_action_due_on ? `Check again ${formatDayKey(String(patch.next_action_due_on)).toLowerCase()}` : null,
+      outcome.key === "snoozed" && patch.next_action_due_on ? `Check again ${formatDayInSentence(String(patch.next_action_due_on))}` : null,
     ].filter(Boolean);
 
     return {

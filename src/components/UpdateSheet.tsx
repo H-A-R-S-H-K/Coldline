@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { recordOutcome } from "@/app/actions";
-import { addDays, formatDayKey, todayKey } from "@/lib/dates";
+import { addDays, formatDayInSentence, todayKey } from "@/lib/dates";
 import type { JobStatus } from "@/lib/types";
 import { LOST_REASONS, NEXT_ACTION_SUGGESTIONS, outcomesFor, STATUS_META, type Outcome } from "@/lib/workflow";
 import { Chip, DuePicker, ErrorText, inputCls, Label, VisitPicker } from "./fields";
@@ -65,7 +65,7 @@ function UpdateSheet({ job, onClose }: { job: UpdatableJob; onClose: () => void 
           {job.nextAction && (
             <p className="mb-3 rounded-xl bg-slate-50 px-3.5 py-2.5 text-sm text-slate-600">
               Next step was <span className="font-semibold text-slate-800">{job.nextAction}</span>
-              {job.dueOn && <> · {formatDayKey(job.dueOn).toLowerCase()}</>}
+              {job.dueOn && <> · due {formatDayInSentence(job.dueOn)}</>}
             </p>
           )}
           {outcomes.map((o) => (
