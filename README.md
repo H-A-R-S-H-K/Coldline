@@ -2,6 +2,8 @@
 
 **A job follow-up app for a small commercial refrigeration business.** Open it in the morning and within five seconds you know which jobs need you today, and nothing gets forgotten.
 
+**Live demo: [coldline-psi.vercel.app](https://coldline-psi.vercel.app)**. The demo login is pre-filled; just tap *Sign in*. Works on a phone or a laptop.
+
 ![Desktop dashboard: overdue, due today and needs-an-update columns](docs/screenshots/desktop-dashboard.png)
 
 <table>
