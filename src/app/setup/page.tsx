@@ -1,6 +1,6 @@
 export default function SetupPage() {
   return (
-    <div className="px-6 py-16">
+    <div className="mx-auto max-w-xl px-6 py-16">
       <h1 className="text-2xl font-bold text-slate-900">Almost there</h1>
       <p className="mt-2 text-slate-600">
         Supabase isn&apos;t configured yet. Add these to <code className="rounded bg-slate-200 px-1">.env.local</code> (or

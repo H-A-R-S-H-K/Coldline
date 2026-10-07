@@ -47,10 +47,10 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   };
 
   return (
-    <div className="pt-[calc(env(safe-area-inset-top)+1rem)]">
-      <div className="px-4">
+    <div className="pt-[calc(env(safe-area-inset-top)+1rem)] lg:pt-8">
+      <div className="px-4 lg:flex lg:items-center lg:justify-between lg:gap-6">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Jobs</h1>
-        <form className="relative mt-3" action="/jobs">
+        <form className="relative mt-3 lg:mt-0 lg:w-96" action="/jobs">
           {f !== "active" && <input type="hidden" name="f" value={f} />}
           <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -63,7 +63,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         </form>
       </div>
 
-      <nav className="no-scrollbar mt-3 flex gap-2 overflow-x-auto px-4 pb-1" aria-label="Filter jobs">
+      <nav className="no-scrollbar mt-3 flex gap-2 overflow-x-auto px-4 pb-1 lg:mt-5 lg:flex-wrap lg:overflow-visible" aria-label="Filter jobs">
         {FILTERS.map((x) => {
           const count = searched.filter(x.match).length;
           const active = x.key === filter.key;
@@ -86,7 +86,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
         })}
       </nav>
 
-      <div className="mt-3 space-y-2.5 px-4">
+      <div className={cx("mt-3 space-y-2.5 px-4", jobs.length > 0 && "lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0 xl:grid-cols-3")}>
         {jobs.length > 0 ? (
           jobs.map((j) => <JobRow key={j.id} job={j} />)
         ) : (

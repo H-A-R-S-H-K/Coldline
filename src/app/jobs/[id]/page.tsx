@@ -49,13 +49,15 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
 
   return (
     <div>
-      <header className="sticky top-0 z-30 flex items-center border-b border-slate-200/70 bg-canvas/90 px-2 pb-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] backdrop-blur-lg">
+      <header className="sticky top-0 z-30 flex items-center border-b border-slate-200/70 bg-canvas/90 px-2 pb-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] backdrop-blur-lg lg:static lg:border-0 lg:bg-transparent lg:pt-6 lg:backdrop-blur-none">
         <Link href="/" className="flex h-10 items-center gap-1 rounded-xl px-2 text-[15px] font-semibold text-brand-600">
           <ChevronLeftIcon className="h-5 w-5" /> Today
         </Link>
       </header>
 
-      <div className="px-4 pt-4">
+      {/* Job and actions on the left; on desktop the history sits in a right-hand column. */}
+      <div className="px-4 pt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start lg:gap-10 lg:pt-2">
+        <div className="min-w-0">
         {/* What is this job? */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -129,8 +131,10 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
           }}
         />
 
+        </div>
+
         {/* History */}
-        <section className="mt-8">
+        <section className="mt-8 lg:mt-0 lg:rounded-2xl lg:bg-white lg:p-5 lg:ring-1 lg:ring-slate-200/70">
           <h2 className="mb-3 px-1 text-[13px] font-bold uppercase tracking-wider text-slate-500">Activity</h2>
           {data.activities.length === 0 ? (
             <p className="px-1 text-sm text-slate-500">No activity yet.</p>

@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { BottomNav } from "@/components/BottomNav";
 import { ToastProvider } from "@/components/Toast";
+import { TopNav } from "@/components/TopNav";
 import { BUSINESS_NAME } from "@/lib/config";
 import "./globals.css";
 
@@ -28,7 +29,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body className={`${GeistSans.variable} antialiased`}>
         <ToastProvider>
-          <main className="mx-auto min-h-dvh max-w-lg pb-[calc(env(safe-area-inset-bottom)+6rem)]">{children}</main>
+          <TopNav />
+          {/* Phone-width column on mobile; wide canvas on desktop (pages narrow forms themselves). */}
+          <main className="mx-auto min-h-dvh max-w-lg pb-[calc(env(safe-area-inset-bottom)+6rem)] lg:max-w-7xl lg:px-4 lg:pb-16">
+            {children}
+          </main>
           <BottomNav />
           <AutoRefresh />
         </ToastProvider>

@@ -25,7 +25,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={cx(
-              "animate-toast-in absolute top-[calc(env(safe-area-inset-top)+12px)] left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl",
+              "animate-toast-in absolute top-[calc(env(safe-area-inset-top)+12px)] left-1/2 lg:top-20 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl",
               toast.kind === "success" ? "bg-slate-900 text-white" : "bg-red-600 text-white",
             )}
           >

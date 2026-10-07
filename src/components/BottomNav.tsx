@@ -26,7 +26,7 @@ export function BottomNav() {
   );
 
   return (
-    <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/90 backdrop-blur-lg">
+    <nav className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t lg:hidden border-slate-200/80 bg-white/90 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-lg items-stretch px-4">
         {tab("/", "Today", HomeIcon, path === "/")}
         <div className="flex flex-1 items-center justify-center">

@@ -101,8 +101,8 @@ export function AddJobForm({ customers }: { customers: Customer[] }) {
   const canSubmit = name.trim() && phone.trim() && issue.trim() && (status !== "scheduled" || visit);
 
   return (
-    <form onSubmit={submit} className="pb-32">
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/70 bg-canvas/90 px-2 pb-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] backdrop-blur-lg">
+    <form onSubmit={submit} className="pb-32 lg:mx-auto lg:max-w-2xl lg:pb-12">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200/70 bg-canvas/90 px-2 pb-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] backdrop-blur-lg lg:static lg:border-0 lg:bg-transparent lg:pt-6 lg:backdrop-blur-none">
         <Link href="/" className="flex h-10 items-center gap-1 rounded-xl px-2 text-[15px] font-semibold text-brand-600">
           <ChevronLeftIcon className="h-5 w-5" /> Cancel
         </Link>
@@ -309,8 +309,9 @@ export function AddJobForm({ customers }: { customers: Customer[] }) {
         <ErrorText>{error}</ErrorText>
       </div>
 
-      <div className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 backdrop-blur-lg">
-        <div className="mx-auto max-w-lg px-4 py-3">
+      {/* Pinned to the bottom on phones; a normal button under the form on desktop. */}
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 backdrop-blur-lg lg:static lg:mt-6 lg:border-0 lg:bg-transparent lg:pb-0 lg:backdrop-blur-none">
+        <div className="mx-auto max-w-lg px-4 py-3 lg:max-w-none">
           <button type="submit" disabled={pending || !canSubmit} className={cx(btn.base, btn.primary, btn.lg, "w-full")}>
             {pending ? "Saving…" : "Create job"}
           </button>
