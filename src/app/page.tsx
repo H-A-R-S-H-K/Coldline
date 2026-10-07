@@ -1,103 +1,167 @@
-import Image from "next/image";
+import Link from "next/link";
+import { AccountMenu } from "@/components/AccountMenu";
+import { AddedNotice } from "@/components/AddedNotice";
+import { ChevronRightIcon } from "@/components/icons";
+import { AttentionCard, JobRow, VisitRow } from "@/components/JobCard";
+import { btn, cx, EmptyState, SectionHeader } from "@/components/ui";
+import { buildDashboard } from "@/lib/attention";
+import { OWNER_NAME } from "@/lib/config";
+import { getActiveJobs } from "@/lib/data";
+import { formatLongToday, greeting } from "@/lib/dates";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+const SECTION_NAMES = {
+  overdue: "Overdue",
+  today: "Due today",
+  stale: "Needs an update",
+  scheduled_today: "Scheduled today",
+  upcoming: "Coming up",
+  closed: "Closed",
+} as const;
+
+export default async function Home({ searchParams }: { searchParams: Promise<{ added?: string }> }) {
+  const { added } = await searchParams;
+  const jobs = await getActiveJobs();
+  const d = buildDashboard(jobs);
+  const addedJob = added ? [...d.overdue, ...d.today, ...d.stale, ...d.scheduledToday, ...d.upcoming].find((j) => j.id === added) : undefined;
+  // Make sure a just-added job is visible even if it would be past the "coming up" preview.
+  const upcomingPreview = d.upcoming.filter((j, i) => i < 4 || j.id === added);
+  const hl = (id: string) => id === added;
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="px-4 pt-[calc(env(safe-area-inset-top)+1rem)]">
+      {addedJob && (
+        <AddedNotice
+          key={addedJob.id}
+          text={`Added ${addedJob.customer.name} → ${SECTION_NAMES[addedJob.state.bucket]}${addedJob.next_action ? ` · ${addedJob.next_action}` : ""}`}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      )}
+      <header className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{formatLongToday()}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            {greeting()}, {OWNER_NAME}
+          </h1>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <AccountMenu />
+      </header>
+
+      {/* The 5-second answer */}
+      <section
+        className={cx(
+          "mt-5 rounded-3xl p-5 text-white shadow-lg",
+          d.attentionCount > 0
+            ? "bg-gradient-to-br from-slate-900 to-slate-800 shadow-slate-900/20"
+            : "bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-emerald-700/20",
+        )}
+      >
+        {d.attentionCount > 0 ? (
+          <>
+            <p className="text-[15px] font-medium text-white/70">Needs your attention</p>
+            <p className="mt-0.5 text-4xl font-bold tracking-tight">
+              {d.attentionCount} job{d.attentionCount === 1 ? "" : "s"}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2 text-[13px] font-semibold">
+              {d.overdue.length > 0 && <Pill className="bg-red-500/90">{d.overdue.length} overdue</Pill>}
+              {d.today.length > 0 && <Pill className="bg-orange-500/90">{d.today.length} due today</Pill>}
+              {d.stale.length > 0 && <Pill className="bg-amber-400/90 text-amber-950">{d.stale.length} need an update</Pill>}
+              {d.valueAtStake > 0 && (
+                <Pill className="bg-white/15">${d.valueAtStake.toLocaleString("en-US")} on the line</Pill>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-[15px] font-medium text-white/80">Needs your attention</p>
+            <p className="mt-0.5 text-3xl font-bold tracking-tight">All caught up ✓</p>
+            <p className="mt-1 text-sm text-white/80">Nothing overdue, due today or going stale.</p>
+          </>
+        )}
+      </section>
+
+      <div className="mt-7 space-y-8">
+        {d.overdue.length > 0 && (
+          <section>
+            <SectionHeader tone="red" title="Overdue" count={d.overdue.length} />
+            <div className="space-y-3">
+              {d.overdue.map((j) => (
+                <AttentionCard key={j.id} job={j} highlight={hl(j.id)} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {d.today.length > 0 && (
+          <section>
+            <SectionHeader tone="orange" title="Due today" count={d.today.length} />
+            <div className="space-y-3">
+              {d.today.map((j) => (
+                <AttentionCard key={j.id} job={j} highlight={hl(j.id)} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {d.stale.length > 0 && (
+          <section>
+            <SectionHeader tone="amber" title="Needs an update" count={d.stale.length} hint="Gone quiet" />
+            <div className="space-y-3">
+              {d.stale.map((j) => (
+                <AttentionCard key={j.id} job={j} highlight={hl(j.id)} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section>
+          <SectionHeader tone="teal" title="Scheduled today" count={d.scheduledToday.length} />
+          {d.scheduledToday.length > 0 ? (
+            <div className="space-y-2.5">
+              {d.scheduledToday.map((j) => (
+                <VisitRow key={j.id} job={j} highlight={hl(j.id)} />
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-2xl bg-white/70 px-4 py-4 text-sm text-slate-500 ring-1 ring-slate-200/70">
+              No visits booked for today.
+            </p>
+          )}
+        </section>
+
+        {upcomingPreview.length > 0 && (
+          <section>
+            <SectionHeader tone="slate" title="Coming up" count={d.upcoming.length} />
+            <div className="space-y-2.5">
+              {upcomingPreview.map((j) => (
+                <JobRow key={j.id} job={j} highlight={hl(j.id)} />
+              ))}
+            </div>
+            {d.upcoming.length > upcomingPreview.length && (
+              <Link href="/jobs" className="mt-3 flex items-center justify-center gap-1 py-2 text-sm font-semibold text-brand-600">
+                See all {d.upcoming.length} <ChevronRightIcon className="h-4 w-4" />
+              </Link>
+            )}
+          </section>
+        )}
+
+        {jobs.length === 0 && (
+          <EmptyState
+            icon="🧊"
+            title="No active jobs"
+            body="When a call, text or form comes in, add it here so it can't slip through the cracks."
+            action={
+              <Link href="/jobs/new" className={cx(btn.base, btn.primary, btn.lg)}>
+                Add a job
+              </Link>
+            }
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        )}
+      </div>
     </div>
   );
+}
+
+function Pill({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <span className={cx("rounded-full px-2.5 py-1", className)}>{children}</span>;
 }
